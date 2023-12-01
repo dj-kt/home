@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ "$1" == 'kill' ]]; then shift
+    taskkill -im "$1.exe" -f
+elif [[ "$1" ]]; then
+    tasks="`powershell Get-Process`"
+    [[ "$1" == 'ls' ]] && shift; tokens="$@"
+    if [[ "$tokens" ]]; then
+        echo "$tasks" | grep -i "${tokens//' '/'\|'}\|ProcessName\|\-\-\-\-\-\-\-\-\-\-\-"
+    else
+        echo "$tasks"
+    fi
+else
+    secretly 'start taskmgr'
+fi

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+
+function xsesh_set {
+  xsesh_set_blackbox() { echo 'blackbox' > "$HOME/.xsession"; }
+  xsesh_set_xfce() { echo 'xfce4-session' > "$HOME/.xsession"; }
+  xsesh_set_$@
+}
+
+function xsesh_as {
+  _user "$1" && xsesh_block && xsesh_allow
+  [[ "$1" ]] && shift && app="$@" || app='xterm'
+  secretly "sudo su - '$username' -c 'DISPLAY=$DISPLAY $app'"
+}
+
+function xsesh_block { xhost "-$xhost_args"; }
+
+function xsesh_allow { xhost "+$xhost_args"; }
+
+function _user {
+  [[ ! "$1" ]] && echo 'no user specified' && exit 1
+  username="$1"; xhost_args="SI:localuser:$username"
+}
+
+xsesh_$@

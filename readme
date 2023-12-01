@@ -1,0 +1,8 @@
+cd
+rm -rf .git .git.home .home .gitignore license readme
+git init -b main
+git remote add origin https://github.com/dj-kt/home.git
+git fetch
+git reset --hard origin/main
+source .home/init
+[[ "$ZSH_VERSION" ]] && source .zshrc || source .bashrc

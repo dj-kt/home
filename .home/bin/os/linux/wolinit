@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -e
+[[ "$1" ]] && sudo ethtool --change "$1" wol g || echo 'pass in an interface name.'

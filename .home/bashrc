@@ -1,0 +1,15 @@
+source "$HOME/.home/profile"
+
+BASH_PROMPT_COLOR=`ansicolor $PROMPT_COLOR`
+BASH_PROMPT_ACCENT=`ansicolor $PROMPT_ACCENT`
+BASH_PROMPT_BODY=`ansicolor $PROMPT_BODY`
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh" 
+type -t __git_ps1 > /dev/null 2>&1 && GITPS1CMD='$(__git_ps1)'
+export PS1="\[\e[$BASH_PROMPT_COLOR\]\u\[\e[m\] \[\e[$BASH_PROMPT_ACCENT\]\h\[\e[m\] \[\e[$BASH_PROMPT_ACCENT\]bash\[\e[m\] \[\e[$BASH_PROMPT_ACCENT\]\t\[\e[$BASH_PROMPT_COLOR\] \w\[\e[$BASH_PROMPT_ACCENT\]$GITPS1CMD
+\[\e[$BASH_PROMPT_COLOR\]$PROMPT_ICON \[\e[m\]\[\e[$BASH_PROMPT_BODY\]"
+export BASH_SILENCE_DEPRECATION_WARNING=1
+export GIT_PS1_SHOWDIRTYSTATE=true
+unset HISTCONTROL
+
+alias hide='clear; PS1=""'
+alias rez='clear; source "$HOMEHOME/bashrc"'

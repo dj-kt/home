@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+surely sure 'wipe all containers and images' || exit
+docker stop `docker ps -a -q`
+docker rm `docker ps -a -q`
+docker rmi -f `docker images -a -q`
+docker system prune -af # docker image prune 

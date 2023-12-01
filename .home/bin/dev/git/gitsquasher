@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" ]] && branch="$1" || branch="`git rev-parse --abbrev-ref HEAD`"
+surely "create squash from $branch"
+[[ "$2" ]] && squash="$2" || squash="$branch-squash"
+
+git checkout "$branch"
+
+git branch -a | grep "$squash" && git co "$squash" && git reset --hard "$branch" \
+  || git checkout -b "$squash"
+
+read -rep 'commit message: ' message
+[[ ! "$message" ]] && message="squashes $branch"
+git reset --soft origin/main && git add -A && git commit -m"$message"

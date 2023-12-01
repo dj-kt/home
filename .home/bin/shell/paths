@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ "$1" == '-x' ]]; then
+    paths=`paths`
+    paths=${paths//' '/'\ '}
+    result="`eachline 'cautiously ls' $paths 2>&1`"
+    if [[ "$result" ]]; then 
+        echo "$result"
+    else
+        echo 'all paths are valid.'
+    fi
+else
+    echo -e "${PATH//:/'\n'}"
+fi

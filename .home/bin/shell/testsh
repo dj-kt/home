@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+. "$HOMETEST/expect"
+. "$HOMETEST/when"
+. "$HOMETEST/verify"
+. `which plush`

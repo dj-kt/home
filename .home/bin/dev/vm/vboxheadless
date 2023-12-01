@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+VBoxManage startvm $@ --type headless

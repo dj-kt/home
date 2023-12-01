@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+. "$HOMETEST/expect"
+. "$HOMETEST/when"
+
+expectSuccessFrom hourssince
+expect 0 toEqual hourssince
+
+when date receives +%s thenEcho 1664345711
+
+expect 0 toEqual hourssince 1664345711
+expect 17.8461 toEqual hourssince 1664281465
+expect 462318 toEqual hourssince 0

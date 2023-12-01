@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" ]] && cd "$@"
+project="`pwd`"
+project="`basename $project`"
+
+function open_if_exists {
+  if [[ -f "$@" || -d "$@" ]]; then
+    open "$@"
+    exit
+  fi
+}
+
+open_if_exists 'Package.swift'
+open_if_exists "$project.xcworkspace"
+open_if_exists "$project.xcodeproj"
+open_if_exists "`ls -d *.xcworkspace 2> /dev/null | cat | head -n1`"
+open_if_exists "`ls -d *.xcodeproj 2> /dev/null | cat | head -n1`"
+
+color mag 'no xcodes found.'; exit 1

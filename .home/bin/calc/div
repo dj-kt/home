@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+[[ ! $1 ]] && exit
+function getQuotient {
+    clac `value $1`/`value $2`
+}
+
+args="${*}"
+args=($args)
+
+result="$1"
+for (( index = 1 ; index < ${#args[@]} ; ++index )) ; do
+    denominator=${args[index]}
+    `is zero $denominator` && echo 'infinity' && exit 1
+    result=`getQuotient $result $denominator`
+done
+
+echo $result
+

@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# https://github.com/kholia/osx-kvm
+set -e
+
+function macvm_boot {
+  cd "${macvm:-"."}"
+
+  macos="${macos:-"sonoma"}"
+
+  cpuarch="${cpuarch:-"Haswell"}" # host, Penryn, Haswell
+
+  if [[ ! "$threads" ]]; then
+    threads="`lscpu | grep 'Core(s) per socket:' | gawk '{print 2^int(log($4)/log(2))}'`"
+  fi
+
+  ovmfs="
+    -drive if=pflash,format=raw,readonly=on,file=./OVMF_CODE.fd
+    -drive if=pflash,format=raw,file=./OVMF_VARS-${res:-"1920x1080"}.fd
+  "
+
+  smc="-device isa-applesmc,osk=ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc"
+
+  net="
+    -netdev user,id=net0,hostfwd=tcp::2222-:22
+    -device virtio-net-pci,netdev=net0,id=net0,mac=${macaddr:-"52:54:00:c9:18:2f"}
+  "
+
+  usb="-usb -device usb-kbd -device usb-tablet -device usb-ehci,id=ehci -device nec-usb-xhci,id=xhci -global nec-usb-xhci.msi=off"
+
+  sata=0 mounts='-device ich9-ahci,id=sata'
+
+  [[ "$efi" ]] && mounts+="
+    -drive id=EFI,if=none,file=./efi.img,format=raw
+    -device ide-hd,bus=sata.$(( ++sata )),drive=EFI,bootindex=$sata
+  "
+
+  mounts+="
+    -drive id=MacHDD,if=none,file="./$macos.img",format=raw
+    -device ide-hd,bus=sata.$(( ++sata )),drive=MacHDD,bootindex=$sata
+  "
+
+  [[ "$base" ]] && mounts+="
+    -drive id=BaseSystem,if=none,file=./BaseSystem.$macos.img,format=raw
+    -device ide-hd,bus=sata.$(( ++sata )),drive=BaseSystem
+  "
+
+  [[ "$gpu" ]] && display="-vga none -device vfio-pci,host=$gpu,multifunction=on,x-no-kvm-intx=on" \
+    || display="-device vmware-svga" # -device VGA,vgamem_mb=256
+
+  [[ "$gpuaudio" ]] && audio="-device vfio-pci,host=$gpuaudio" \
+    || audio="-device ich9-intel-hda -device hda-duplex"
+
+  args="
+    -machine q35 -smbios type=2 -enable-kvm -m ${memory:-"16384"} -monitor stdio
+    -smp $threads,cores=$threads,sockets=1
+    -cpu $cpuarch,kvm=on,vendor=GenuineIntel,+invtsc,vmware-cpuid-freq=on,+ssse3,+sse4.2,+popcnt,+avx,+aes,+xsave,+xsaveopt,check
+    $display $audio $mounts $usb $net $smc $ovmfs
+  "
+
+  echo "$args"
+  qemu-system-x86_64 $args
+}
+
+function macvm_efi { image="$1"
+  [[ ! -f "$image" ]] && echo 'missing image file' && return 1
+  loop_root="`sudo losetup -f --show -P "$image" | tail -1`"
+  image+='.EFI'
+  mkdir -p "$image"
+  sudo mount "$loop_root"p1 "$image"
+  echo "mounted $loop_root at $image"
+  read -rep 'unmount?'
+  sudo umount "$image"
+  sudo losetup -d "$loop_root"
+  rm -rv "$image"
+}
+
+macvm_${@:-"boot"}

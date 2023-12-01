@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+function getModulusOf {
+    clac `value $1`%`value $2`
+}
+
+args="${*}"
+args=($args)
+
+result="$1"
+for (( index = 1 ; index < ${#args[@]} ; ++index )); do
+    result=`getModulusOf $result ${args[index]}`
+done
+
+echo $result

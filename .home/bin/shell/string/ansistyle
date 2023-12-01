@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+[[ $1 == 'bol'* ]] && ansi='1m'
+[[ $1 == 'und'* ]] && ansi='4m'
+[[ $1 == 'bli'* ]] && ansi='5m'
+[[ $1 == 'str'* ]] && ansi='9m'
+[[ "$ansi" ]] && echo "$ansi" && exit
+exit 1

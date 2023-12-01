@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+[[ ! "$3" || "$4" ]] && echo $'pass 3 values to compare\neg. `proportion 16 1920px 9`' && exit 1
+proportion=`div $2 $1`
+proportion=`mul $proportion $3`
+[[ "`value unit $1`" == "`value unit $3`" ]] && units=`value unit $2` || units=''
+echo "$proportion$units"

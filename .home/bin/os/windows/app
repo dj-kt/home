@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+PROGRAMFILESX86="$PROGRAMFILES (x86)"
+[[ ! -d "$PROGRAMFILES" ]] && echo "$PROGRAMFILES not found." && exit
+[[ ! -d "$PROGRAMFILESX86" ]] && echo "$PROGRAMFILESX86 not found." && exit
+
+
+function findapp {
+   cd "$@"
+   happily "find . -type f -not -path './WindowsApps' | grep '$appname\.exe'" | head -n1
+}
+
+appname="$@"; appexe="`findapp "$PROGRAMFILES" || findapp "$PROGRAMFILESX86"`"
+[[ "$appexe" ]] && open "$appexe" || echo "$appname not found."

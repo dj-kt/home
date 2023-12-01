@@ -1,0 +1,14 @@
+#!/usr/bin/env groovy
+
+// ty 80sRock
+
+def script = new GroovyShell(this.class.classLoader)
+  .parse('println map[\'key\']; closure { println \'closure\' }; echo \'echo\'')
+
+script.setBinding new Binding([
+  echo: { a -> println a },
+  closure: { c -> c() },
+  map: [ key: 'map' ]
+])
+
+script.run()

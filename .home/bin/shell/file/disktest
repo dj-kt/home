@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+[[ "$1" ]] && testdata="$1" || testdata="500"
+dd if=/dev/zero of="$HOME/.disktest" bs="`round 0 $testdata/100`"k count=100k status=progress
+rm -f '$HOME/.disktest'

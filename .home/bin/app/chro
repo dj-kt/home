@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+arguments="$@"
+[[ "$arguments" && "$arguments" != *'://'* ]] && \
+  arguments="https://www.google.com/search?q=${arguments// /+}"
+whereami=`whereami`
+if [[ "$whereami" == 'linux' ]]; then
+  chrome_command='google-chrome-stable'
+elif [[ "$whereami" == *'bsd' ]]; then
+  chrome_command='chromium'
+elif [[ "$whereami" == 'windows' ]]; then
+  chrome_command="$PROGRAMFILES/Google/Chrome/Application/chrome.exe"
+elif [[ "$whereami" == 'darwin' ]]; then
+  chrome_command='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+fi
+secretly "$chrome_command" $arguments

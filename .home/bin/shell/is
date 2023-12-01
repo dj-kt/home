@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -e
+
+function _any {
+  target="$1"; shift; args=("$@")
+  for arg in "${args[@]}"; do [[ "$arg" == "$target" ]] && return; done
+  return 1
+}
+
+function _same {
+  target="$1"; shift; args=("$@")
+  for arg in "${args[@]}"; do [[ "$arg" == "$target" ]] || return 1; done
+}
+
+function _empty { [[ ! "$1" ]] && return || return 1; }
+
+function _equal {
+  target="$1"; shift
+  equal_value () { number1=`value $1`; number2=`value $2`; clac "$1 == $2"; }
+  export -f equal_value
+  eachexec "equal_value $target" $@
+}
+
+function _even {
+  even_value () { _integer $1 && _zero `mod $1 2`; }
+  export -f even_value
+  eachexec even_value $@
+}
+
+function _odd {
+  odd_value () { _integer $1 && ! _zero `mod $1 2`; }
+  export -f odd_value
+  eachexec odd_value $@
+}
+
+function _integer {
+  int_value () { [[ ! "`div $1 1 | grep '\.'`" ]] || return 1; }
+  export -f int_value
+  eachexec int_value $@
+}
+
+function _zero {
+  zero_value () { `_equal $1 0` || return 1; }
+  export -f zero_value
+  eachexec zero_value $@
+}
+
+function _negative {
+  negative_value () { `_less $1 0` && return || return 1; }
+  export -f negative_value
+  eachexec negative_value $@
+}
+
+function _positive {
+  positive_value () { _zero $1 || _greater $1 0 && return; return 1; }
+  export -f positive_value
+  eachexec positive_value $@
+}
+
+function _greater { clac "`value $2` < `value $1`"; }
+
+function _less { clac "`value $1` < `value $2`"; }
+
+function _dir { [[ -d "$@" ]] || return 1; }
+
+function _file { [[ -f "$@" ]] || return 1; }
+
+function _binary { _file "$@" && quietly "! grep -qI . '$@'" || return 1; }
+
+function _text { ! _binary "$@" || return 1; }
+
+export -f _any _same _equal _even _odd _integer _zero _negative _positive _greater _less _empty
+
+_$@

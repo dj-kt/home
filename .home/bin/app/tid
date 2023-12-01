@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+baseUrl='https://listen.tidal.com'
+[[ "$1" ]] && query="$@" && search="search?q=${query// /+}"
+open "$baseUrl/$search"

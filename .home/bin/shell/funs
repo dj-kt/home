@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+fun="$@"
+funs="`catw "$fun" | grep 'function .* {'`"
+funs="${funs//"function _$fun_"/}"
+funs="${funs//'function _'/}"
+funs="${funs//'function '/}"
+funs="${funs//' {'/}"
+funs="${funs//'{'/}"
+
+echo "$funs"

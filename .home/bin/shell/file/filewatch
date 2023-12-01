@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" == '-n'* ]] && timeout="${1/'-n'/}" && shift || timeout='4'
+filename="$@"
+
+if [[ ! "$printer" ]]; then
+  quietly 'which bat' && printer='bat --paging=never --style snip,numbers' \
+    || printer='cat'
+fi
+
+function file_changed {
+  md5_current="`openssl md5 "$filename"`"
+  if [[ "$md5" != "$md5_current" ]]; then
+    md5="$md5_current" && return
+  fi; return 1
+}
+
+until false; do
+  file_changed && clear && $printer "$filename"
+  sleep "$timeout"
+done

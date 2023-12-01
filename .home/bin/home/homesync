@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+[[ -d "$HOMELOCAL" && "$1" != '-x' ]] && exit 1 ||:
+
+wan && cd "$HOME" && quietly 'ls .git || ls .git.home' || exit 1
+
+quietly 'mv .git.home .git' ||:
+branch="`git rev-parse --abbrev-ref HEAD`"
+
+quietly 'git fetch' \
+  && color mag "`git diff origin/$branch --name-status`" \
+  && git reset --hard origin/$branch || :
+rm -f readme license
+mv .git .git.home

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+[[ "$PROMPT_ICON" ]] && icon=" $PROMPT_ICON "
+clear
+function qq { exit; }
+trap plushtrap INT && function plushtrap { read -rep 'exit [y]: ' exit; [[ "$exit" == 'y' ]] && qq || :; }
+
+while true; do
+  read -rep "$icon" input
+  is any "$input" 'qq' 'exit' 'clear' && $input ||\
+    $@ $input
+done

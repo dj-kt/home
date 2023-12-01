@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+quietly 'which memtester' || pkg install memtester
+if [[ $1 ]]; then memory=$1; else
+  memory_mb=`free -m | sed -n '2p' | awk '{print $2}'`
+  echo $memory_mb MB
+  read -p 'memory: ' memory
+fi
+sudo memtester $memory 1
+

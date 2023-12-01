@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+echo -e '
+!^ \t# n=first
+!$ \t# n=last
+!:3 \t# n=3
+!:3-8 \t# n=3..8
+!:3-$ \t# n=3..last
+!:3* \t# n=3..last
+!:3- \t# n=3..last-1
+!* \t# n=first..last
+'

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+
+[[ ! "$1" ]] && echo 'pass save or apply.' && exit 1
+
+xfconf="$HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
+xfconf_home="$HOMEHOME/conf/xfconf"
+
+function _save {
+    _copy "$xfconf" "$xfconf_home"
+}
+
+function _apply {
+    mkdir -p "$xfconf"
+    _copy "$xfconf_home" "$xfconf"
+}
+
+function _copy {
+    cp -v "$1/thunar.xml" "$2"
+    cp -v "$1/xfce4-keyboard-shortcuts.xml" "$2"
+    cp -v "$1/xfwm4.xml" "$2"
+}
+
+_$1

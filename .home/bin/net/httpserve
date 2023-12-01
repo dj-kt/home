@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" ]] && cd "$@"; python -m 'http.server' "$port"

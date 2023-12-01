@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+! (return 0 2>/dev/null) && echo 'scriptroot is not sourced.' && exit 1
+realpath `dirname "$0"`

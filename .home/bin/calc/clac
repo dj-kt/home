@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -e
+
+[[ ! "$1" ]] && exit
+[[ ! "$solver" ]] && solver='gawk'; solver="_$solver"'_calc'
+
+expression="$@"
+expression="${expression// /}"
+expression="${expression//x/'*'}"
+expression="${expression//'--'/'+'}"
+
+function _bc_calc { bc <<< "$expression"; }
+
+function _gawk_calc { gawk "{ print "$expression" }" <<< ''; }
+
+function _mawk_calc { mawk "{ print "$expression" }" <<< ''; }
+
+function _node_calc { node -pe "$expression"; }
+
+function _perl_calc { perl -E "say $expression"; }
+
+function _python_calc { python -c "print($expression)"; }
+
+function _ruby_calc { ruby -e "p $expression"; }
+
+function _sqlite_calc { sqlite3 <<< "select $expression"; }
+
+function _zsh_calc { zsh -c "echo \$(("$expression"))"; }
+
+function _bash_calc { echo $(("$expression")); }
+
+if [[ "`echo "$expression" | grep '=\|<\|>'`" ]]; then
+  [[ "`$solver`" == '1' ]] || exit 1
+elif [[ "$precision" ]]; then
+  printf "%.*f\n" "$precision" "`$solver`"
+else
+  "$solver"
+fi

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+. "$HOMETEST/expect"
+
+expectSuccessFrom is equal 1 1
+expectSuccessFrom is equal -1 -1
+expectSuccessFrom is equal 5 5.0 5.000000 5 5 5.000000
+expectFailureFrom is equal 5 5.0 5.0000001 5 5 5.000000
+expectFailureFrom is equal -1 56
+expectSuccessFrom is less -1 1
+expectSuccessFrom is less 1 5
+expectSuccessFrom is less 1.123 11
+expectSuccessFrom is greater 56 52
+expectSuccessFrom is greater 56 55.997
+expectSuccessFrom is positive 123
+expectSuccessFrom is negative -123
+expectFailureFrom is less 1 -1 
+expectFailureFrom is less 1.04 -1.123 
+expectFailureFrom is greater 55 56
+expectFailureFrom is greater 55.1 56.1
+expectSuccessFrom is positive 123 321 0
+expectFailureFrom is positive 123 -123 0
+expectSuccessFrom is negative -123 -1
+expectFailureFrom is negative -123 123
+expectFailureFrom is negative 0
+expectFailureFrom is negative -0
+expectSuccessFrom is zero 0 0.0000000 0.0
+expectFailureFrom is zero 0 0.0000 4 0.00
+expectSuccessFrom is odd 1 -11 3.0000 21 
+expectFailureFrom is odd 1 -11 3.0001 21 
+expectFailureFrom is odd 1 3 5 -4.123 222
+expectSuccessFrom is even 0.0 0 72.000 222 1234 122
+expectFailureFrom is even 8.000 2.0002 4
+expectFailureFrom is even -1 2 4 3
+expectSuccessFrom is integer 1 2 333 4444 -23 -5000.00000
+expectFailureFrom is integer 1.00001 2 333 44

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[[ "$1" ]] && accountId="$1" || accountId='0'
+open "https://outlook.live.com/mail/$accountId"

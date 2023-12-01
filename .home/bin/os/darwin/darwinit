@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+
+defaults write com.apple.Dock showhidden -bool true
+defaults write com.apple.Dock autohide -bool false
+defaults write com.apple.Dock scroll-to-open -bool true
+defaults write com.apple.Dock slow-motion-allowed -bool true
+
+defaults write com.apple.Finder AppleShowAllFiles true
+defaults write com.apple.Finder _FXShowPosixPathInTitle -bool true
+defaults write com.apple.Finder QuitMenuItem -bool true
+defaults write com.apple.Finder CreateDesktop -bool false
+
+defaults write -g ApplePressAndHoldEnabled -bool false
+
+[[ "$1" == 'lock' ]] && lock='true' || lock='false'
+
+defaults write com.apple.Dock position-immutable -bool "$lock"
+defaults write com.apple.Dock size-immutable -bool "$lock"
+defaults write com.apple.Dock contents-immutable -bool "$lock"
+
+killall Finder
+killall Dock
+
+# nvram StartupMute=%01

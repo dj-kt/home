@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+pkg i postgresql@14
+serv r postgresql@14
+
+[[ "$PG_APP_USER" && "$PG_APP_PASS" && "$PG_APP_DB" ]] \
+  && postgres -c "create role $PG_APP_USER with login password '$PG_APP_PASS';" \
+  && psql postgres -c "alter role $PG_APP_USER createdb;" \
+  && psql postgres -U "$PG_APP_USER" -c "create database $PG_APP_DB;"
+
+# psql -U "$PG_APP_USER" -d "$PG_APP_DB" -c "SELECT * FROM $TABLE_NAME;"
+# psql -U "$PG_APP_USER" -d "$PG_APP_DB" -f file.sql
+# psql -U "$PG_APP_USER" -d "$PG_APP_DB" < file.sql

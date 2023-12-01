@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+rundll32 sysdm.cpl,EditEnvironmentVariables

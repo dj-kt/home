@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+function xfce {
+    echo 'source /usr/local/etc/xdg/xfce4/xinitrc' > "$HOME/.xinitrc"
+    sudo pw groupmod video -m "$USER"
+    sudo pw groupmod wheel -m "$USER"
+    sudo sysrc dbus_enable="YES"
+}
+# $@
+xfce
+

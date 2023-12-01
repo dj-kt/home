@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ $cores && $io && $memory && $time ]]; then
+    stress -c $cores -i $io -m $memory -t $time
+    read -p 'exit...'
+    exit
+fi
+
+read -p 'cores: ' cores
+export cores=${cores:-'4'}
+read -p 'io threads: ' io
+export io=${io:-'1'}
+read -p 'memory workers: ' memory
+export memory=${memory:-'1'}
+read -p 'time: ' time
+export time=${time:-'60'}
+
+mux 'stats 1' top stressout
+

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+surely "setup vscode container in `pwd`" || exit
+[[ -d './.devcontainer/' ]] && echo 'container already present.' && exit
+mkdir './.devcontainer/'
+
+echo '{ "name": "dev container", "dockerFile": "Dockerfile" }' > .devcontainer/devcontainer.json
+echo 'FROM ubuntu:latest
+RUN apt-get update && apt-get install -y vim git build-essential curl xrdp xfce4' > Dockerfile

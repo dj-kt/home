@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$GHUB_URL" ]] || GHUB_URL='https://github.com'
+GHUB_SSH="${GHUB_URL/'https://'/'git@'}"
+
+if [[ "$1" == '.' || "$1" == 'repo' ]]; then shift
+
+  url_path="`git remote -v | gawk '{print $2}'| head -1`"
+  url_path="${url_path/"$GHUB_URL/"/''}"
+  url_path="${url_path/"$GHUB_SSH:"/''}"
+
+  [[ ! "$url_path" ]] && echo 'github repo not found' && exit \
+    || url_path="/$url_path"
+
+elif [[ "$1" == 'pr' ]]; then shift
+
+  function ghpr {
+    [[ "$1" ]] && url_path="/$1/commits" || url_path='s?q=is%3Apr'
+    open "$GHUB_URL/$github_project/pull$url_path"
+  }; export -f ghpr
+
+  function ghprdot {
+    [[ "$2" ]] || return 1
+    open "$GHUB_URL/$github_project/pull/$2.$1"
+  }; export -f ghprdot
+
+  [[ ! "$github_project" ]] && echo 'github_project not set' && exit 1
+  if [[ "$1" == 'patch' ]]; then shift && eachexec 'ghprdot patch' $@
+  elif [[ "$1" == 'diff' ]]; then shift && eachexec 'ghprdot diff' $@
+  elif [[ "$1" ]]; then eachexec ghpr $@
+  else ghpr; fi
+  exit
+
+elif [[ "$1" == 'clone' || "$1" == 'ssl' || "$1" == 'ssh' ]]; then
+
+  mkdir -p "$PROJECTS" && cd "$PROJECTS"
+  
+  [[ "$1" == 'ssh' ]] \
+    && clone="$GHUB_SSH:" \
+    || clone="$GHUB_URL/"
+  shift
+  
+  [[ ! "$2" ]] && echo 'owner and name missing.' && exit 1
+
+  project="$1/$2" && shift 2
+
+  git clone "$clone/$project" $@
+  exit
+
+fi
+
+query="$@"
+if [[ $query == '/'* ]]; then url_path="$query"
+elif [[ "$query" ]]; then url_path="/search?q=${query// /+}"; fi
+
+open "$GHUB_URL$url_path"

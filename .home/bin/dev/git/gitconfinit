@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ -f "$HOME/.gitconfig" ]]; then
+  surely sure 'overwrite exiting gitconfig' || exit
+  user_conf="`cat $HOME/.gitconfig | grep -E -A2 '[user]'`"
+  name="`echo "$user_conf" | grep 'name =' | gawk '{$1=$2=""; print $0}' | gawk '{$1=$1};1'`"
+  email="`echo "$user_conf" | grep 'email =' | gawk '{print $3}' | gawk '{$1=$1};1'`"
+fi
+
+read -ep 'name = ' -i "$name" name
+read -ep 'email = ' -i "$email" email
+
+[[ ! "$name" || ! "$email" ]] && echo 'enter your name and email.' && exit 1
+
+echo "[user]
+  name = $name
+  email = $email
+[core]
+  autocrlf = input
+  editor = vim
+[alias]
+  br = branch
+  bra = rev-parse --abbrev-ref HEAD
+  com = commit -m
+  ci = commit -am
+  co = checkout
+  di = diff
+  dis = diff --staged
+  fe = fetch
+  poh = push origin HEAD --force-with-lease -u
+  ref = reflog
+  remo = remote -v
+  sha = rev-parse HEAD
+  st = status --ignored
+  up = pull --rebase
+[color]
+  ui = always
+[pull]
+  ff = only
+[init]
+  defaultBranch = main
+[rerere]
+  enabled = true
+" > "$HOME/.gitconfig"

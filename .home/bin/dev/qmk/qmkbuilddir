@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+[[ ! -d "$1" ]] && echo 'a valid directory is required.' && exit 1
+cd $1
+JSONS=`ls *.json`
+[[ ! "$JSONS" ]] && echo 'no json files found.' && exit 1
+
+for JSON in $JSONS; do
+    qmkbuild "$JSON"
+done

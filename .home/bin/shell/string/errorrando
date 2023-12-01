@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+messages=( 'runtime exception: stub' 'access denied' 'registry corrupted' 'permission denied' 'internal server error' 'segmentation fault' 'cyclical redundnacy check error' 'kernel panic' 'socket timeout' 'index out of bounds' 'bad gateway' 'bad message received' 'interrupted system call' 'operation not permitted' 'nil reference exception' 'null pointer exception' 'fatal device error' 'main thread locked' 'deadlock' 'invalid memory address' 'division by zero' 'tjunction temperature exceeded' 'wake failure' 'stack overflow' 'heap underflow' 'system compromised' 'invalid decrypt key' 'cpu governor locked' 'secure sandbox violation' 'break-in attempt detected' 'illegal operation' 'invalid instruction' 'bad cpu architecture: '`uname -m` 'chassis intrusion detected' 'kernel linker jettisoned' 'linker error' 'watchdog triggered' 'certificate expired' 'unknown host' 'integrity check failed' 'buffer overflow'  )
+size=${#messages[@]}
+index=$((RANDOM%size))
+echo "${messages[$index]}"

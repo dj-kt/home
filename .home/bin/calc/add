@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+function getSumOf {
+  clac `value $1`+`value $2`
+}
+
+args="${*}"
+args=($args)
+
+result=0
+for arg in "${args[@]}"; do
+    result=`getSumOf $result $arg`
+done
+
+echo $result

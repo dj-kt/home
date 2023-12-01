@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+apply="$1"
+shift
+
+while read -r line; do
+  $apply $line
+done <<< "$@"

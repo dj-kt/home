@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+os=`whereami`
+if [[ "$os" == *'bsd' ]]; then
+    sudo /usr/sbin/zzz
+elif [[ "$os" == 'darwin' ]]; then
+    pmset sleepnow
+elif [[ "$os" == 'linux' ]]; then
+    quietly 'cat /proc/acpi/wakeup | grep "LID0.*enabled"' && sudo bash -c 'echo LID0 > /proc/acpi/wakeup'
+    sudo systemctl suspend -i # quietly 'systemctl suspend'
+elif [[ "$os" == 'windows' ]]; then
+    # quietly 'pow sav'
+    rundll32.exe powrprof.dll,SetSuspendState Sleep
+elif [[ "$os" == 'android' ]]; then
+    quietly 'input keyevent 26'
+fi

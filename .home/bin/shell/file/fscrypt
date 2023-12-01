@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+
+function _luks { _@; }
+
+function _mount {
+  local mount="$1"
+  local mapper="$2"
+  local device="$3"
+  sudo cryptsetup luksOpen $device $mapper
+  sudo mount /dev/mapper/$mapper $mount
+}
+
+function _unmount {
+  local mount="$1"
+  local mapper="$2"
+  sudo umount $mount
+  sudo cryptsetup luksClose $mapper
+}
+
+_$@

@@ -1,0 +1,21 @@
+
+function pro { [[ "$workspace" ]] || local workspace="$PROJECTS"
+  mkdir -p "$workspace" && cd "$workspace" || return 1
+  [[ ! "$1" ]] && return
+  local target="`find . -maxdepth 1 -type d  | grep "$1" | head -n1`"
+  [[ ! "$target" ]] && return 1
+  cd "$target"
+  [[ "$2" == 'ide' || "$2" == 'cod' ]] && shift && $@ .
+}
+
+function shtyle {
+  export PROMPT_ICON=${1:-'+-'} PROMPT_COLOR=${2:-'white'} PROMPT_ACCENT=${3:-'white'} PROMPT_BODY=${4:-'default'}
+  echo "$PROMPT_ICON" "$PROMPT_COLOR" "$PROMPT_ACCENT" "$PROMPT_BODY" > "$HOME/.shtyle"
+}
+touch "$HOME/.shtyle" && shtyle `<"$HOME/.shtyle"`
+
+function chhome {
+  local HOME="`realpath "$1"`" && shift
+  [[ ! -d "$HOME" ]] && echo "$HOME is not a directory." && return 1
+  exec $SHELL $@
+}

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+function _gcb {
+  branch="`git branch --show-current`"
+  [[ "$1" == '-a' ]] && git add -A && shift
+  if [[ "$1" == '--am'* ]]; then git commit --amend $@; return; fi
+  git status | grep 'nothing to commit, working tree clean' && return || color mag "`git diff --staged`"
+  surely sure 'commit' || return 1
+  [[ "$1" ]] && MESSAGE="$@" || read -rep 'commit message: ' MESSAGE
+  [[ ! "$MESSAGE" ]] && echo 'no commit message.' && return 1
+  git commit -m"$branch - $MESSAGE"
+}
+if [[ "$1" == '-aaa' ]]; then _gcb -a --am --no-edit
+elif [[ "$1" == '-aa' ]]; then _gcb -a --am
+else _gcb $@; fi

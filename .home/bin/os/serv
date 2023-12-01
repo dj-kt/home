@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set  -e
+
+function _serv_darwin { brew services "$operation" $service; }
+
+function _serv_freebsd { sudo service "$service" "$operation";}
+
+function _serv_linux { sudo systemctl "$operation" $service; }
+
+[[ ! "$1" ]] && exit 1
+if is any "$1" 'up' 'u'; then operation='start'
+elif is any "$1" 'down' 'd'; then operation='stop'
+elif is any "$1" 'res' 'r'; then operation='restart'
+elif is any "$1" 'stat' 's'; then operation='status'
+else operation="$1"; fi
+
+shift && service="$@"
+
+_serv_`whereami`

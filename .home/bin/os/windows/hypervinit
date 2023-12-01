@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+
+[[ "$1" ]] && launchtype="$@" || launchtype='auto'
+
+bcdedit -set hypervisorlaunchtype $launchtype
