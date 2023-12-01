@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+codebin="`which 'code' ||:`"
+[[ ! "$codebin" ]] && codebin="`which 'code-oss' ||:`" 
+[[ ! "$codebin" ]] && codebin='vim'
+
+"$codebin" $@

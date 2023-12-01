@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+. "$HOMETEST/expect"
+
+expect 'HELLO WORLD' toEqual to uppercase hElLo wORLd
+expect 'hello world' toEqual to lowercase hElLo wORLd
+expectSuccessFrom is same abc abc
+expectFailureFrom is same abc abc abcd
+expectSuccessFrom is any a abc def a b c
+expectSuccessFrom is any 10km 1x 3km 10km f abc
+expectFailureFrom is any 10km 1x 3km f abc

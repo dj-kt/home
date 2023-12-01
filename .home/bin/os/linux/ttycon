@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -e
+
+function checktty { [[ "$TTY" == '/dev/tty'* ]] || exit; }
+
+function _ttycon_font { checktty && setfont $@; }
+
+function _ttycon_hidpi { checktty && setfont sun12x22; }
+
+function _ttycon_zzz { setterm --blank 1; }
+
+function _ttycon_init {
+  [[ ! "$1" ]] && echo 'tty number not specified' && return 1
+  [[ ! "$2" ]] && username="$USER" || username="$2"
+  service="[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --noissue --autologin $username %I \$TERM
+Type=idle"
+  script="
+  mkdir -p /etc/systemd/system/getty@tty$1.service.d
+  echo '$service' > /etc/systemd/system/getty@tty$1.service.d/override.conf
+"
+  echo "
+  
+$service
+  
+  "
+  surely "write service for tty$1"
+
+  sudo bash -c "$script"
+}
+
+_ttycon_$@

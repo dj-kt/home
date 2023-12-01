@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+[[ ! "$1" ]] && exit 1
+
+time="`value $1`"
+unit="`value unit $1`"
+
+[[ "$unit" == 'ms' ]] && mult='0.001'
+[[ "$unit" == 's' ]] && mult='1'
+[[ "$unit" == 'm' ]] && mult='60'
+[[ "$unit" == 'h' ]] && mult='3600'
+
+if [[ "$mult" ]]; then
+  this_long="`clac $time x $mult`"
+  sleep $this_long
+else
+  exit 1
+fi

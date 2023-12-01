@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+. "$HOMETEST/expect"
+
+expect 4.71239rad toEqual convert 270deg rad
+expect 4.71239rad toEqual convert 270° rad
+
+expect 1.5pi toEqual convert 270deg pi
+expect 1.5π toEqual convert 270° π
+
+expect 270deg toEqual convert 4.71239rad deg
+expect 270° toEqual convert 1.5π °
+expect π toEqual convert 180° π
+
+expect 37.7778C toEqual convert 100F C
+expect -17.7778C toEqual convert 0F C
+expect 71.6F toEqual convert 22C F
+expect 140F toEqual convert 60C F
+expect 100°C toEqual convert 212°F °C
+expect 212F toEqual convert 100C F
+expect 212°F toEqual convert 100°C °F
+
+expect 6.43736km toEqual convert 4mi km
+expect 21120ft toEqual convert 4mi ft
+
+expect 3.10685mi toEqual convert 5km mi
+expect 5000m toEqual convert 5km m
+
+expect 1.234km toEqual convert 1234m km
+expect 1350yd toEqual convert 1234m yd
+expect 13.1234ft toEqual convert 4m ft
+expect 400cm toEqual convert 4m cm
+expect 4000mm toEqual convert 4m mm
+
+expect 3.6576m toEqual convert 4yd m
+expect 12ft toEqual convert 4yd ft
+expect 144in toEqual convert 4yd in
+
+expect 1.89394mi toEqual convert 10000ft mi
+expect 3.9624m toEqual convert 13ft m
+expect 4.33333yd toEqual convert 13ft yd
+
+expect 2.54cm toEqual convert 1in cm
+expect 25.4mm toEqual convert 1in mm
+
+expect 14.1732in toEqual convert 36cm in
+
+expect 1in toEqual convert 25.4mm in
+expect 2.54cm toEqual convert 25.4mm cm
+
+expect 2hr toEqual convert 120min hr
+expect 120min toEqual convert 2hr min

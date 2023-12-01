@@ -1,0 +1,11 @@
+#!/usr/bin/env groovy
+
+def pipe = ''
+System.in.withReader { lines ->
+  lines.eachLine { line ->
+    pipe += "$line\n"
+  }
+}
+
+println pipe
+args.each { println it }

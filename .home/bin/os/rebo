@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+os=`whereami`
+
+if [[ "$os" == 'darwin' ]]; then
+  [[ "$1" == 'now' ]] && sudo shutdown -r now ||\
+    osascript -e 'tell app "loginwindow" to «event aevtrrst»'
+elif [[ "$os" == 'linux' ]]; then
+  sudo systemctl reboot || sudo shutdown -r now  
+elif [[ "$os" == *'bsd' ]]; then
+  sudo shutdown -r now
+elif [[ "$os" == 'windows' ]]; then
+  shutdown -r
+else
+  sudo reboot
+fi

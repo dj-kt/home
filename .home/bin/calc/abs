@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+function getAbsOf {
+    local abs="`value "$1"`"
+    echo "${abs//'-'/}"
+}
+export -f getAbsOf
+
+eachmap getAbsOf $@

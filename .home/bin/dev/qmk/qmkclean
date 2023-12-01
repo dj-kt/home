@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+! quietly which qmk && echo "qmk not installed" && exit 1
+
+surely 'clean qmk repo'
+cd "$HOME/qmk_firmware"
+git clean -xfd

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ "$ANDROID_HOME" && ! -d "$ANDROID_HOME" ]]; then
+    surely 'setup android home' || exit
+    platform=`whereami`
+    if [[ "$platform" == 'darwin' ]]; then platform='mac'
+    elif [[ "$platform" == 'windows' ]]; then platform='win'
+    else platform='linux'; fi
+
+    mkdir -p "$ANDROID_HOME"
+    cd "$ANDROID_HOME"
+    wget "https://dl.google.com/android/repository/commandlinetools-$platform-8512546_latest.zip"
+    unzip "commandlinetools-$platform-8512546_latest.zip" && rm "commandlinetools-$platform-8512546_latest.zip"
+    mv cmdline-tools latest
+    mkdir cmdline-tools
+    mv latest cmdline-tools
+fi
+
+"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --update --verbose --sdk_root="$ANDROID_HOME"

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -e
+
+declare -A ides=(
+  ['as']='studio'
+  ['cl']='clion'
+  ['fl']='fleet'
+  ['gl']='goland'
+  ['ij']='idea'
+  ['ri']='rider'
+  ['rm']='rubymine'
+  ['rr']='rustrover'
+  ['vs']='start devenv'
+  ['ws']='webstorm'
+  ['xc']='xcopen'
+  ['cod']='code'
+)
+
+function set_ide { ide="${ides["$1"]}"; }
+
+[[ "$1" ]] && set_ide $1 || ide=''
+
+if [[ "$ide" ]]; then shift
+elif [[ -d "$@" ]]; then
+    if quietly "cd '$@'; ls ./*/*/main/AndroidManifest.xml"; then ide='as'
+  elif quietly "cd '$@'; ls ./Cargo.toml"; then ide='rr'
+  elif quietly "cd '$@'; ls ./Package.swift"; then ide='xc'
+  elif quietly "cd '$@'; ls ./*.xcodeproj"; then ide='xc'
+  elif quietly "cd '$@'; ls ./*.xcworkspace"; then ide='xc'
+  elif quietly "cd '$@'; ls ./*.sln"; then ide=vs
+  else ide='ij'
+    fi  
+  set_ide $ide
+else
+  ide='idea'
+fi
+
+secretly "$ide $@"

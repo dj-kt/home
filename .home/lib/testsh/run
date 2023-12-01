@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+function setup {
+    . "$HOMETEST/expect"
+    . "$HOMETEST/when"
+    . "$HOMETEST/verify"
+    date_command="`which date`"
+    [[ "$failures" ]] && return || failures=0
+    [[ "$runs" ]] || runs=0
+    [[ "$time" ]] || time=`"$date_command" +%s`
+    [[ "$codegen" ]] && printf '' > "$HOME/codegen.sh"
+}; export -f setup
+
+function finish {
+    local now=`"$date_command" +%s`
+    let time=now-time
+    local color=cyan
+    [[ "$time" == '0' ]] && let tps="$runs" || let tps=runs/time
+    if [[ "$runs" -gt '30' ]]; then
+        [[ "$time" != '0' && "$tps" -lt '10' ]] && color='yel'
+        [[ "$time" != '0' && "$tps" -lt '3' ]] && color='mag'
+    fi
+    color $color "$runs ran in $time seconds at `clac $runs/$time` tps"
+
+    let runs-=failures
+    color cyan "$runs passed"
+    if [[ "$failures" != '0' ]]; then
+        color mag "$failures failed"
+    fi
+}; export -f finish
+
+function run {
+    testfiles=`find "$HOMEHOME/bin" -type f -name \*'_tests' | grep "$1"`
+    [[ "$testfiles" ]] && echo "setup;`cat $testfiles | grep -v 'set -e\|/usr/bin/env bash\|. \$HOMETEST/'`;finish" | bash 2> /dev/null
+}
+
+run $1

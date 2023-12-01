@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -e
+
+funcbody="$1"
+shift
+
+func="
+function apply {
+  $funcbody
+}
+
+function applyall {
+    args=(\"\$@\")
+    for arg in \"\${args[@]}\"; do
+        apply \$arg
+    done
+}
+
+applyall $@
+"
+eval "$func"

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# netstat -an
+ports="`lsof -i`"
+if [[ "$1" ]]; then
+  echo "$ports" | grep "$@"
+else 
+  echo "$ports"
+fi

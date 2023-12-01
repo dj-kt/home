@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ "`whereami`" == 'windows' ]]; then
+  PING_FLAGS="-n 1"
+else
+  PING_FLAGS="-c 1"
+fi
+
+bash -c "ping $PING_FLAGS www.github.com || ping $PING_FLAGS www.google.com" > /dev/null 2>&1 \
+  && echo 'connected' \
+  && exit
+
+echo 'disconnected'
+exit 1

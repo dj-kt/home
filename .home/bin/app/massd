@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[[ "$1" ]] && urlpath="search/$@" || urlpath='transactions'
+open "https://drop.com/$urlpath"

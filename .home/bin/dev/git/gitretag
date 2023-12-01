@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+[[ ! $1 ]] && echo 'provide tag name.' && exit 1
+tag="$1"
+surely "clobber $tag with `git rev-parse HEAD`"
+git push --delete origin $tag
+git tag -d $tag
+git tag $tag
+git push origin $tag

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+surely "remove $1 from filevault" && sudo fdesetup remove -user "$1"

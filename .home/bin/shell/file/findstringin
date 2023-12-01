@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[[ "$1" == '-v' ]] && shift || arg='l'
+grep --color=always -rnw$arg "$2" -e "$1"

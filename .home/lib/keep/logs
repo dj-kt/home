@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+function week {
+    local DAYOFWEEK=`date '+%u'`
+    for (( DAY=DAYOFWEEK; DAY>=0; --DAY )); do
+        local SUBDAYS="-"$DAY"days"
+        local DAYLOG="$KEEP/log/"`date +%Y.%m.%d -d "$SUBDAYS"`".md"
+        if is file "$DAYLOG"; then
+          local title="`cat "$DAYLOG" | grep '^### '`"
+          title="$title `cat "$DAYLOG" | grep '[[:digit:]] \- happy' | gawk '{print $5}'`"
+          local hours="+ hours: `cat "$DAYLOG" | grep '[[:digit:]] hours' | gawk '{print $4}'`"
+          local notes="`cat "$DAYLOG" | grep '+ notes: '`"
+          notes="${notes//'notes: '/'\n  + '}"
+          notes="${notes//'. '/'\n  + '}"
+          echo -e "$title\n$hours\n$notes" | grep -v '^  + $'
+        fi
+    done
+}
+
+function quest {
+    local quests=`logscat | grep '??'`
+    if [[ "$quests" ]]; then    
+        local ifsd="$IFS"; IFS=$'\n'; qarray=($quests); IFS="$ifsd"
+        local quests="${#qarray[@]} quests
+
+$quests
+";      quests=${quests//' ??'/}
+        quests=${quests//'      +'/'  +'}
+        quests=${quests//'    +'/'  +'}
+        color magenta "$quests"
+    fi
+}
+
+function logcat { 
+  if [[ "$1" ]]; then
+    watch -tcn"$1" 'keep logcat'
+  else
+    message="`cat "$LOGFILE" | grep '+ '`";
+    show_tags='true' formatmessage "$message"
+  fi
+}
+
+function logscat { cat "$KEEP"/log/*; }
+
+function started { [[ -f "$LOGFILE" ]] || return 1; }
+
+function ended { [[ `tail -n1 "$LOGFILE" | grep -- '-->'` ]] || return 1; }
+
+function active { started && ! ended || return 1; }

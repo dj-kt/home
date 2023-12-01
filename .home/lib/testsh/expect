@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+function expect { # expected_value
+    expected="$1"
+    shift
+    $@
+}
+
+function toEqual { # actual_value
+    let ++runs
+    result="`$@`"
+    [[ "$result" == "$expected" ]] && echo "`color cyan pass:` '$@' is $result" && return
+    echo "`color mag fail:` '$@' expected $expected but got $result"
+    let ++failures
+}
+
+function expectSuccessFrom { # command
+    let ++runs
+    $@ > /dev/null 2>&1 && echo "`color cyan pass:` '$@' has zero exit code" && return
+    echo "`color mag fail:` '$@' expected zero exit code"
+    let ++failures
+}
+
+function expectFailureFrom { # command
+    let ++runs
+    $@ > /dev/null 2>&1 && echo "`color mag fail:` '$@'  expected non-zero exit code" && let ++failures && return
+    echo "`color cyan pass:` '$@' has non-zero exit code"
+}

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
+function _darwin_jbt { open -a 'JetBrains Toolbox'; }
+
+_`whereami`_jbt 2> /dev/null

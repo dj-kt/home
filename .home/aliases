@@ -1,0 +1,5 @@
+alias up='homeup'
+alias ups='homesync'
+alias home='cod "$HOMEHOME"'
+alias holo='mkdir -p "$HOMELOCAL" && cod "$HOMELOCAL"'
+alias lib='workspace="$HOME/Library" pro'

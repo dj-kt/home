@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -e
+
+function _pool { # pool_name /dev/sdabc, pool_name mirror /dev/sdabc /dev/sdxyz
+  sudo zpool create $@
+}
+
+function _import { # pool_name
+  sudo zfs import $1 -f
+}
+
+function _create { # pool_name zfs_name
+  sudo zfs create -o encryption=on -o keyformat=passphrase -o compression=on "$1/$2"
+}
+
+function _mountpoint { # pool_name zfs_name /path/to/mount
+  sudo zfs set mountpoint="$3" "$1/$2"
+}
+
+function _mount { # zfs_name
+  sudo zfs load-key $1
+  sudo zfs mount $1
+}
+
+function _unmount { # pool_name zfs_name
+  sudo zfs umount "$1/$2"
+  sudo zfs unload-key "$1/$2"
+}
+
+function _list {
+  sudo zpool list -v
+  sudo zfs list
+  sudo zfs list -t snapshot
+}
+
+function _destroy { # pool_name zfs_name
+  sudo zfs destroy -r "$1/$2"
+}
+
+function _destroy_snapshot { # pool_name zfs_name snapshot_name
+  sudo zfs destroy "$1/$2@$3"
+}
+
+function _samba { # pool_name zfs_name
+  sudo zfs set 'sharesmb=on' "$1/$2"
+  sudo zfs get 'sharesmb,sharenfs'
+}
+
+function _gc {
+  sudo zsysctl service gc --all
+}
+
+function _packages {
+  sudo apt install zpool zfs zfs-dkms zfsutils-linux
+}
+
+_$@

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+[[ ! $1 ]] && exit
+
+function getProductOf {
+    clac "`value $1`*`value $2`"
+}
+
+args="${*}"
+args=($args)
+
+result=1
+for arg in "${args[@]}"; do
+    result=`getProductOf $result $arg`
+done
+
+echo $result

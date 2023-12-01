@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -e
+
+function freebsd_stats {
+  quietly 'kldstat | grep coretemp' || sudo kldload coretemp
+  sysctl dev.cpu | grep 'temperature' | awk '{print $2}'
+}
+
+function windows_stats { 
+  nvidia-smi | grep 'C   ' | gawk '{print $3}'
+}
+
+function linux_stats {
+  if quietly type sensors; then sensors
+  elif quietly type vcgencmd; then 
+    vcgencmd measure_temp
+    vcgencmd get_throttled
+    vcgencmd measure_volts
+    vcgencmd measure_clock 1
+  fi
+  cat /proc/cpuinfo | grep Hz
+}
+
+if [[ ! "$1" ]] ; then
+  "`whereami`_stats"
+else
+  watch -tcn $1 "stats"
+fi	

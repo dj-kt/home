@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+workingDir="$(dirname "${BASH_SOURCE[0]}")"
+workingDir="$(realpath "${workingDir}")"
+cd $workingDir
+
+[[ "$1" == '-' ]] && shift
+sudoer="$1"; shift
+[[ "$1" == '-c' ]] && shift
+minty="`cygpath -d "$MSYS_ROOT/usr/bin/mintty.exe"`"
+[[ "$1" ]] && command="$@" || command="$minty -t $sudoer -- $MSYS_ROOT/usr/bin/bash -l -c zsh"
+
+[[ "$sudoer" && "$command" ]] && start su.bat "$sudoer" "$command"
+
+until false; do read -s waiting && [[ "$waiting" ]] || break; done

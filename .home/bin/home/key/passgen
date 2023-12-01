@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+passwd="$@"; openssl passwd -1 "$passwd"

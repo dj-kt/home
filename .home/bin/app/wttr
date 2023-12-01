@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+[[ ! "$1" && "$wttrzip" ]] && wttrargs="$wttrzip" || wttrargs="$1"
+report="`curl -s "wttr.in/$wttrargs"`"
+location="`echo "$report" | grep 'Weather report:' `"
+location="${location/'Weather report: '/''}"
+location="${location/', United States'/''}"
+echo -e "\n   $location"
+echo "$report" | head -n7 | tail -n6 && echo

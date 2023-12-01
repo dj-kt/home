@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+bash -c "${*}" > /dev/null 2>&1 || exit

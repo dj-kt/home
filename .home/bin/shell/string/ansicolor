@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+[[ $1 == 'bright' ]] && bright='60' && shift || bright='0'
+[[ $1 == 'default' ]] && ansi=$(( 10 ))
+[[ $1 == 'black' ]] && ansi=$(( 30 + $bright ))
+[[ $1 == 'red' ]] && ansi=$(( 31 + $bright ))
+[[ $1 == 'green' ]] && ansi=$(( 32 + $bright ))
+[[ $1 == 'yellow' || $1 == 'yel' ]] && ansi=$(( 33 + $bright ))
+[[ $1 == 'blue' ]] && ansi=$(( 34 + $bright ))
+[[ $1 == 'mag' || $1 == 'magenta' ]] && ansi=$(( 35 + $bright ))
+[[ $1 == 'cyan' ]] && ansi=$(( 36 + $bright ))
+[[ $1 == 'white' ]] && ansi=$(( 37 + $bright ))
+[[ $1 == 'gray' ]] && ansi=$(( 90 ))
+
+[[ "$ansi" ]] && echo $ansi'm' && exit
+exit 1

@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set  -e
+
+function freebsd { sudo /usr/sbin/pkg $@; }
+
+function netbsd { sudo pkgin $@; }
+
+function android { apt $@; }
+
+function windows { arch $@; }
+
+function darwin {
+    if [[ "$1" == 'install' ]]; then shift
+      brew install --no-quarantine $@
+    elif [[ "$1" == 'remove' ]]; then shift
+      brew uninstall $@
+    else
+      brew $@
+    fi
+}
+
+function linux {
+    if quietly 'which apt'; then
+        sudo apt $@
+    elif quietly 'which pacman'; then
+        arch $@
+    elif quietly 'which dnf'; then
+        redhat $@
+    fi
+}
+
+function openbsd {
+    local op="$1"; shift
+    if [[ "$op" == 'install' ]]; then
+        sudo pkg_add $@
+    elif [[ "$op" == 'search' ]]; then
+        sudo pkg_info -Q $@
+    elif [[ "$op" == *'remove' ]]; then
+        sudo pkg_delete $@
+    elif [[ "$op" == 'autoremove' ]]; then
+        sudo pkg_delete -a
+    elif [[ "$op" == 'upgrade' ]]; then
+        sudo pkg_add -u
+    elif [[ "$op" == 'update' ]]; then
+        sudo pkg_check $@
+    fi
+}
+
+function arch {
+    local op="$1"; shift
+    if [[ "$op" == 'install' ]]; then
+        sudo pacman -S $@
+    elif [[ "$op" == 'search' ]]; then
+        sudo pacman -Ss $@
+    elif [[ "$op" == 'remove' ]]; then
+        sudo pacman -Rs $@
+    elif [[ "$op" == 'autoremove' ]]; then
+        sudo pacman -Rs `sudo pacman -Qdtq`
+    elif [[ "$op" == 'upgrade' ]]; then
+        sudo pacman -Syu $@
+    elif [[ "$op" == 'update' ]]; then
+        sudo pacman -Syy $@
+    else
+        sudo pacman $op $@
+    fi
+}
+
+function redhat {
+    [[ "$1" == 'update' ]] && ops='check-update' || ops="$@"
+    sudo dnf $ops
+}
+
+function callpm {
+    [[ "$1" ]] && local op="$1" && shift
+    
+    if [[ ! "$op" ]]; then
+        local op='update'
+    elif [[ "$op" == 'i' ]]; then
+        local op='install'
+    elif [[ "$op" == 's' ]]; then
+        local op='search'
+    elif [[ "$op" == 'r' ]]; then
+        local op='remove'
+    elif [[ "$op" == 'ar' ]]; then
+        local op='autoremove'
+    elif [[ "$op" == 'u' ]]; then
+        local op='update'
+    elif [[ "$op" == 'up' ]]; then
+        pkg u
+        local op='upgrade'
+    elif [[ "$op" == 'yolo' ]]; then
+        pkg up
+        local op='autoremove'
+    elif [[ "$op" == 'init' ]]; then
+        pkg u && pkg i bash curl gawk git stress tig tmux vim wget zsh
+        surely "install $packages" && pkg i $packages 
+        exit
+    fi
+
+    `whereami` $op $@
+}
+
+callpm $@

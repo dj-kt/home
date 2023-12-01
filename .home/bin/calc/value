@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" == 'unit' ]] && print_units='true' && shift
+input="$1"
+
+function parseInputAs {
+    for (( i = 0; i < ${#input}; ++i )); do
+        $1 "${input:$i:1}"
+    done
+}
+
+function valueCharacters {
+    character=$1
+    if [[ $character =~ [0-9] || $character == '.' || $character == '-' ]]; then
+        number="$number$character"
+    fi
+}
+
+function unitCharacters {
+    character=$1
+    if [[ ! $right && $character =~ [0-9] || $character == '.' || $character == ',' || $character == '$' ]]; then
+        left=1
+    elif [[ $left ]]; then
+        right=1
+        units="$units$character"
+    fi
+}
+
+parseInputAs unitCharacters
+
+if [[ "$print_units" ]]; then 
+    echo "$units"; exit
+else
+    input="${input//"$units"/}"
+fi
+
+parseInputAs valueCharacters
+
+[[ "$number" ]] && echo "$number"

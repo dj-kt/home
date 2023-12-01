@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" ]] && localport="$1" && shift || read -rep 'local port: ' localport
+[[ "$1" ]] && remoteport="$1" && shift || read -rep 'remote port: ' remoteport
+[[ "$1" ]] && host="$1" && shift || read -rep 'host: ' host
+
+ssh -L "$localport:$host:$remoteport" "$host" $@

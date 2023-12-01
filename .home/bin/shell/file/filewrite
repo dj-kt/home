@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
+filename="$1"
+shift
+echo "$@" > "$filename"

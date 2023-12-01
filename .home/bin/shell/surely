@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -e
+
+function multi_select {
+  [[ ! $1 ]] && exit 1; choices=($@)
+  for (( index = 0 ; index < ${#choices[@]} ; ++index )) ; do
+    echo "$index ${choices[index]}"
+  done
+
+  read -p '' selection
+  selection=($selection)
+  for (( index = 0; index < ${#selection[@]} ; ++index )) ; do
+      $do ${choices[selection[index]]}
+  done
+}
+
+[[ "$surely" == 'skip' ]] && exit
+
+[[ "$1" == 'sure' ]] && shift && choices='[Y/n]' || choices='[y/N]'
+
+message="$@"
+read -p "$message? $choices " selection
+
+[[ ! "$selection" && "$choices" == '[Y/n]' ]] &&\
+  selection='y' || selection="`to lowercase $selection`"
+[[ "$selection" == 'y'* ]] || exit 1
+

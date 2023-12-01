@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+
+function _integer {
+  integer_value () { echo $1 | gawk '{print int($0)}'; }
+  export -f integer_value
+  eachmap integer_value $@
+}
+
+function _lowercase { echo "$@" | gawk '{print tolower($0)}'; }
+
+function _uppercase { echo "$@" | gawk '{print toupper($0)}'; }
+
+_$@

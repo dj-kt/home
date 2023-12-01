@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+[[ ! "$1" ]] && echo 0 && exit
+
+function getDiff {
+    clac `value $1`-`value $2`
+}
+
+args="${*}"
+args=($args)
+
+result="$1"
+for (( index = 1 ; index < ${#args[@]} ; ++index )) ; do
+    result=`getDiff $result ${args[index]}`
+done
+
+echo $result

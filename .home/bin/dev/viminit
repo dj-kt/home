@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+[[ -f '.vimrc' ]] && surely 'overwrite vimrc'
+
+echo 'color elflord
+set number
+set backspace=2
+:cabbr qq q!
+:cabbr Q q
+:cabbr X x
+' > "$HOME/.vimrc"
+
+echo 'vimrc saved.'

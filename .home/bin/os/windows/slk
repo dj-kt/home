@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+secretly "$LOCALAPPDATA/slack/slack.exe"

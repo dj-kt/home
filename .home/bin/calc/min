@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+is less $@ && echo "$1" || echo "$2"

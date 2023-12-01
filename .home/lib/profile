@@ -1,0 +1,8 @@
+include \
+  "$HOMEHOME/lib/blobman" \
+  "$HOMEHOME/lib/keep/bin" \
+  "$HOMEHOME/lib/fakeapi" \
+  "$HOMEHOME/lib/pipes" \
+  "$HOMEHOME/lib/scancoder"
+
+alias collects='import "$HOMEHOME/lib/collect/struct" "$HOMEHOME/lib/collect/hashmap"'

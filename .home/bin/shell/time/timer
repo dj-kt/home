@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -e
+start="`date +%s`"
+print_time='date +%H:%M:%S'
+
+if [[ "$1" ]]; then
+  start_time="`$print_time`"; $@; echo -e "$start_time\n`$print_time`"
+else
+  read -p "`$print_time` "; echo "`$print_time`"
+fi
+
+time="`date +%s`"
+time="`sub $time $start`"
+seconds="`mod $time 60`"
+time="`div $time 60`"
+minutes="`to integer $time`"
+
+if [[ "$seconds" == '1' ]]; then
+    seconds="1 second"
+else
+    seconds="$seconds seconds "
+fi
+
+if [[ "$minutes" == '0' ]]; then
+    minutes=''
+elif [[ "$minutes" == '1' ]]; then
+    minutes="1 minute "
+else
+    minutes="$minutes minutes "
+fi
+
+echo "$minutes$seconds"

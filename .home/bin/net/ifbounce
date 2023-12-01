@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
+sudo ip link set $1 down
+while quietly "ip link ls up | grep $1"; do sleep 1; done
+sudo ip link set $1 up

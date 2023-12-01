@@ -1,0 +1,1 @@
+adb kill-server && sleep 2 && adb devices

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+mkdir -p "$HOME/.ssh"
+vim "$HOME/.ssh/authorized_keys"

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+[[ "$server_port" ]] || server_port='80'
+[[ "$server_name" ]] || server_name='tranquilo.box'
+[[ "$location_path" ]] || location_path='/'
+[[ "$location_path" == '/' ]] || rewrite="rewrite ^/$location_path$ / break;"
+[[ "$location_protocol" ]] || location_protocol='http'
+[[ "$location_address" ]] || location_address='127.0.0.1'
+[[ "$location_port" ]] || location_port='8080'
+
+
+echo "
+# vars: server_port server_name location_path location_path location_protocol location_address location_port
+
+server {
+    listen $server_port;
+    server_name $server_name;
+
+    location $location_path {
+        $rewrite
+        proxy_set_header   X-Forwarded-For \$remote_addr;
+        proxy_set_header   Host \$http_host;
+        proxy_pass         \"$location_protocol://$location_address:$location_port\";
+    }
+}
+"

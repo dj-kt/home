@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+[[ ! "$3" ]] && exit
+color="\e[`ansicolor $1`"
+shift
+style="\e[`ansistyle $1`"
+shift
+colorstyletext="$style$color$@\e[0m"
+echo -e "$colorstyletext"

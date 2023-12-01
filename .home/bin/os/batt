@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+
+whereami=`whereami`
+if [[ "$whereami" == 'darwin' ]]; then level=`pmset -g batt | awk '{print $3}' | tail -n1` && echo ${level//;/}
+elif [[ "$whereami" == 'linux' ]]; then echo "`cat /sys/class/power_supply/BAT*/capacity | awk '{print $1}'`%"
+elif [[ "$whereami" == 'windows' ]]; then wmic path Win32_Battery get EstimatedChargeRemaining
+fi

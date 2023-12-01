@@ -1,0 +1,11 @@
+
+[[ -f "$HOME/.bashrc" ]] \
+  && cat "$HOME/.bashrc" | grep 'source "$HOME/\.home/bashrc"' > /dev/null 2>&1 \
+    || echo 'source "$HOME/.home/bashrc"' >> "$HOME/.bashrc"
+
+[[ -f "$HOME/.zshrc" ]] \
+  && cat "$HOME/.zshrc" | grep 'source "$HOME/\.home/zshrc"' > /dev/null 2>&1 \
+    || echo 'source "$HOME/.home/zshrc"' >> "$HOME/.zshrc"
+
+bash -c 'ls -d .git.home || mv .git .git.home' > /dev/null 2>&1
+rm -f "$HOME/readme" "$HOME/license"

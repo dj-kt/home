@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+pipe=''
+STDIN.read.split('\n').each do |line| 
+  pipe+=line
+end
+
+arguments=''
+ARGV.each do |argument|
+  arguments+="#{argument} "
+end
+
+puts pipe
+puts arguments

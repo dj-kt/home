@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+
+mkdir -p "$HOME/.byobu"
+cd "$HOME/.byobu"
+
+echo 'BYOBU_BACKEND=tmux' > backend
+
+echo 'BACKGROUND=k
+FOREGROUND=w
+MONOCHROME=1' > color
+
+echo 'screen_upper_left=" #color"
+screen_upper_right=" #color #whoami #hostname #ip_address #menu"
+screen_lower_left=" #color #network #disk_io #custom #entropy #raid #reboot_required #updates_available #apport #services #mail #users #uptime fan_speed cpu_temp battery #wifi_quality #processes #load_average #cpu_count cpu_freq memory swap #disk #time_utc #whoami #hostname #ip_address #logo #distro #release #arch session"
+screen_lower_right=" date time"
+
+tmux_left=" #color #network #disk_io #custom #entropy #raid #reboot_required #updates_available #apport #services #mail #users #uptime fan_speed cpu_temp battery #wifi_quality #processes #load_average #cpu_count cpu_freq memory swap #disk #time_utc #whoami #hostname #ip_address #logo #distro #release #arch session"
+tmux_right=" date time"
+' > status

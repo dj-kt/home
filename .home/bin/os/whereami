@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+[[ ! "$OSTYPE" ]] && OSTYPE="`uname -s`" && OSTYPE="`to lowercase "$OSTYPE"`"
+
+if [[ "$OSTYPE" == 'darwin'* ]]; then echo 'darwin'
+elif [[ "$OSTYPE" == 'freebsd'* ]]; then echo 'freebsd'
+elif [[ "$OSTYPE" == *'android'* ]]; then echo 'android'
+elif [[ "$OSTYPE" == 'linux'* ]]; then echo 'linux'
+elif [[ "$OSTYPE" == 'msys'* ]]; then echo 'windows'
+elif [[ "$OSTYPE" == 'openbsd'* ]]; then echo 'openbsd'
+elif [[ "$OSTYPE" == 'netbsd'* ]]; then echo 'netbsd'
+else echo 'unknown'; fi

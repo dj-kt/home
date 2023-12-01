@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" == 'cod' || "$1" == 'vim' || "$1" == 'vi' ]] \
+  && op="$1" && shift
+[[ ! "$op" ]] && op='cat'
+[[ "$1" ]] && which="`which "$1"`" || exit 1
+echo "# $which"
+! is binary "$which" && $op "$which" \
+  || echo 'binary.'

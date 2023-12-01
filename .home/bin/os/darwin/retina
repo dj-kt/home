@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[[ "$1" == 'disable' ]] && retina='NO' || retina='YES'
+sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool "$retina"

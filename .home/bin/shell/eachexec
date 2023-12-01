@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+apply="$1"
+shift
+args=("$@")
+for arg in "${args[@]}"; do
+    $apply $arg
+done

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+secretly "'$PROGRAMFILES/Microsoft VS Code/Code' $@"

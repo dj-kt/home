@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+export jira_baseurl="https://$jira_org.atlassian.net"
+if [[ ! "$1" ]]; then
+  open "$jira_baseurl/jira/software/projects/$jira_project/boards/$jira_board"
+  exit
+fi
+
+function jira_ticket { 
+  open "$jira_baseurl/browse/$jira_project-$1"
+}; export -f jira_ticket
+
+eachexec jira_ticket $@

@@ -1,0 +1,2 @@
+[[ "$1" == 'off' ]] && switch='disable' || switch='enable'
+adb shell svc wifi $switch

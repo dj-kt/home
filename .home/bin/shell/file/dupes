@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -e
+
+function setdir {
+  [[ "$dir" ]] && return
+  [[ "$1" ]] && dir="$@" || dir='.'
+}
+
+function emptydirs {
+  setdir $@
+  empties="`find "$dir" -depth -type d -empty`"
+  echo "$empties"
+  # [[ "$empties" && "$action" ]] \
+  #   && surely "$action empty directories" \
+  #   && find "$dir" -depth -type d -empty -delete
+}
+
+function dupefiles {
+  setdir "`realpath $@`"
+  dupes="`find "$dir" ! -empty -type f -exec md5sum {} + | sort | uniq -w32 -dD`"
+  if [[ ! "$dupes" ]]; then
+    echo '# no duplicates found.'
+  elif [[ "$script" ]]; then
+    echo "$dupes" | print_script
+  else
+    echo "$dupes"
+  fi
+  # [[ "$action" ]] && surely "$action dupes" && resolvedupes
+}
+
+function print_script {
+  while read dupe; do
+    local sum="`echo "$dupe" | gawk '{print $1}'`"
+    local dupe="`echo "$dupe" | gawk '{print $2}'`"
+    echo "# rm -vf '$dupe' # $sum"
+  done
+}
+
+function resolvedupes {
+  local sums=`echo "$dupes" | sort | awk '{print $1}' | uniq`
+  local sums=($sums)
+  local dupesbackup="$@-duplicates"
+  let dupescount=1
+  
+  for (( i = 0; i < ${#sums[@]}; ++i )); do
+    sum=${sums[i]}
+    filenames=`echo "$dupes" | grep "$sum"`
+    filenames="${filenames//"$sum  "/}"
+
+    ifsdefault="$IFS"; IFS=$'\n'
+      filenames=($filenames)
+    IFS="$ifsdefault"
+    
+    unset keep
+    for (( j = 0; j < ${#filenames[@]}; ++j )); do
+      filename="${filenames[j]}"
+      [[ ! "$keep" || "${#keep}" > "${#filename}" ]] && keep="$filename"
+    done
+    for (( k = 0; k < ${#filenames[@]}; ++k )); do
+      filename="${filenames[k]}"
+      filebasename="`basename "$filename"`"
+
+      if [[ "$filename" != "$keep" ]]; then
+        local newfilename="$dupesbackup/$dupescount-$filebasename"
+        mkdir -p "$dupesbackup"
+        mv "$filename" "$newfilename"
+        echo "mv '`realpath "$newfilename"`' '`realpath "$filename"`'" >> "$dupesbackup/revert.sh"
+        
+        let ++dupescount
+      fi
+    done
+  done
+  surely='skip' shebang "$dupesbackup/revert.sh"
+}
+
+if [[ "$1" == 'script' ]]; then script='true' && shift
+# elif [[ "$1" == 'move' || "$1" == 'mv' ]]; then action='move' && shift
+# elif [[ "$1" == 'remove' || "$1" == 'rm' ]]; then action='remove' && shift
+fi
+
+
+# if [[ "$1" == 'empty' ]]; then shift
+#   op='emptydirs'
+# else
+  op='dupefiles'
+# fi
+
+if [[ ! "$script" ]]; then
+  surely sure "find duplicates in '$@'"
+  echo "searching..."
+fi
+
+$op $@

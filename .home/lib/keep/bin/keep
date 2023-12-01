@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+[[ "$1" ]] \
+  && source "$HOMEHOME/lib/keep/logs" \
+  && source "$HOMEHOME/lib/keep/time" \
+  && source "$HOMEHOME/lib/keep/day" \
+  && source "$HOMEHOME/lib/keep/util" \
+  && $@

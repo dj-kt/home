@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+reg add "$1" -v "$2" -t reg_dword -d $3 -f
+

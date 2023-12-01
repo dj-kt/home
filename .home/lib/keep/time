@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+function day {
+    local start=`starttime`
+    local end="$1"
+    local hours=`hourssince $start $end`
+    sub $hours `afktime`
+}
+
+function starttime { [[ -f "$LOGFILE" ]] && head -n 1 "$LOGFILE" | gawk '{print $2}' || return 1; }
+
+function afktime { tasktime afk; }
+
+function tasktime { add "`cat "$LOGFILE" | grep "[[:digit:]] $1" | gawk '{print $4}'`"; }
+
+function weekhours {
+    [[ "$1" ]] && local TOTAL="$1" || local TOTAL='0'
+    local DAYOFWEEK=`date '+%u'`
+    for (( DAY=1; DAY<DAYOFWEEK; ++DAY )); do
+        local SUBDAYS="-"$DAY"days"
+        local DAYLOG="$KEEP/log/"`date +%Y.%m.%d -d "$SUBDAYS"`".md"
+        is file "$DAYLOG" &&\
+            local DAYHOURS=`tail -n1 $DAYLOG | gawk '{ print $1 }'` &&\
+                TOTAL=`add $DAYHOURS $TOTAL`
+    done
+    echo $TOTAL
+}
+
+function timer {
+    ! is file "$LOGFILE" && echo 'day never started...' && return 1
+    [[ "$1" ]] && watch -tcn"$1" 'keep timer' && return
+
+    if active; then
+        [[ ! "$WEEKHOURS" ]] && export WEEKHOURS=`weekhours`
+        HOURS="`day`"
+        TOTALHOURS="`add $HOURS $WEEKHOURS`"
+        HOURS_LEFT="`clac 40 - "$TOTALHOURS"`"
+        hours_left_day="`clac 8 - "$HOURS"`"
+        hours_left_day="`min $hours_left_day $HOURS_LEFT`"
+        eod_stamp="`round 0 "$hours_left_day x 3600"`" now_stamp="`date +%s`"
+        eod_stamp="`round 0 "$now_stamp + $eod_stamp"`"
+    else
+        logcontents="`tail -n7 "$LOGFILE"`"
+        HOURS="`echo $logcontents | gawk '{print $10}'`"
+        TOTALHOURS="`echo $logcontents | gawk '{print $4}'`"
+        HOURS_LEFT="`echo $logcontents | gawk '{print $6}'`"
+        eod_stamp="`echo $logcontents | gawk '{print $2}'`"
+    fi
+
+    local task_items=($KEEPTASKS 'afk')
+    for task_item in "${task_items[@]}"; do
+        local hours="`tasktime $task_item`"
+        ! is zero $hours && local tasks="$tasks\n+ $task_item   $hours"
+    done
+
+    EOD="`happily "date -d '@$eod_stamp' '+%R'"`"
+    [[ ! "$EOD" ]] && EOD='fin'
+
+    message="
++ total $TOTALHOURS / $HOURS_LEFT
++ hours $HOURS$tasks"
+
+    quests=`quest` && [[ "$quests" ]] && message="$message\n \n+ $quests"
+    todos=`todo` && [[ "$todos" ]] && message="$message\n \n+ $todos"
+
+    message="+ `date +%R` / $EOD\n \n$message" 
+    message="`formatmessage "$message"`"
+    
+    echo -e "$message" | grep -v "^$"
+}

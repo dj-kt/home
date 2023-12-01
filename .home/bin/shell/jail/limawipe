@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+dockerwipe -f && limastop || echo
+rm -frv "$HOME/.docker" "$HOME/.colima"

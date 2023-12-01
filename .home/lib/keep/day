@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+
+[[ ! "$DATE" ]] && export DATE=`date '+%Y.%m.%d'`
+[[ ! "$LOGFILE" ]] && export LOGFILE="$KEEP/log/$DATE.md"
+[[ ! "$YEARFILE" ]] && export YEARFILE="$KEEP/log/`date +%Y`.md"
+[[ ! "$NOTES" ]] && export NOTES="$KEEP/notes"
+[[ ! "$TODOFILE" ]] && export TODOFILE="$NOTES/todo.md"
+[[ ! -f "$KEEP/profile" ]] && echo "export KEEPTASKS='keep' KEEPTAGS='keep'" > "$KEEP/profile"
+[[ ! -d "$KEEP/log" ]] && mkdir -p "$KEEP/log/"
+[[ ! -d "$KEEP/shell" ]] && mkdir -p "$KEEP/shell/"
+[[ ! -d "$NOTES" ]] && mkdir -p "$NOTES"
+
+function go {
+    started && dash && return
+    wan || return 1
+    up || read -p 'continue?'
+
+    if ! started; then
+        local time="`date +%R`" 
+        local stamp="`date -d "$time" +%s`" day="`date '+%D'`" dayname="`date +%A`"
+        filewrite "$LOGFILE" "<!-- $stamp -->
+### $day
+"
+        keeplog "$time - happy `to lowercase $dayname`!"
+    fi
+    dash
+}
+
+timegrep='[[:digit:]][[:digit:]]:[[:digit:]][[:digit:]]'
+function keeplog {
+    ! active && echo 'no active workday' && return 1
+    [[ ! "$1" ]] && clear && return
+    [[ "$1" == '^'* ]] && insert_flags="--tail ${1/'^'/}" && shift
+
+    message="$@"
+    message="${message//' -- '/' ++ '}"
+    message="${message//' --- '/' +++ '}"
+    message="${message//' ++ '/'
+    + '}"
+    message="${message//' +++ '/'
+      + '}"
+    if quietly "echo '$1' | grep '$timegrep'"; then
+        message="+ $message"
+    elif [[ "$1" == '+' ]]; then message="  $message"
+    elif [[ "$1" == '++' ]]; then message="    ${message/'++ '/'+ '}"
+    elif [[ "$1" == '+++' ]]; then message="      ${message/'+++ '/'+ '}"
+    else message="  + $message"; fi
+
+    fileinsert "$LOGFILE" $insert_flags "$message" && up
+}
+
+function task {
+    ! active && echo 'workday is not active.' && return
+    
+    [[ "$1" == 'fin' ]] && shift && fin='true'
+
+    local start="`date +%s`"
+    
+    if [[ "$1" == 'since' && "$2" ]]; then
+      local start="`date -d "$2" +%s`"
+      shift 2
+    fi
+    
+    if [[ "$fin" ]]; then
+      local log_contents="`cat "$LOGFILE"`"
+      start_time="`echo "$log_contents" | grep '_#_' | gawk '{print $2}'`"
+      [[ ! "$start_time" ]] && return
+      start_timestamp="`date -d "$start_time" +%s`"
+      duration="`clac \($start - $start_timestamp\)/60/60`"
+      # perl -pi -e s/'_#_'/"$duration"/g "$LOGFILE"
+      filewrite "$LOGFILE" "${log_contents/'_#_'/"$duration"}" ||:
+    else
+      keeplog "`date -d "@$start" '+%R'` - _#_ $@"
+    fi
+}; function fin { task fin $@; }
+
+function tasks {
+  if [[ "$KEEPTASKS" ]]; then
+    local args=($KEEPTASKS)
+    for arg in "${args[@]}"; do
+        local hours="`tasktime $arg`"
+        ! is zero $hours \
+          && read -rep "$arg: " notes \
+          && local tasks="$tasks$arg $hours $notes. "
+    done; echo "$tasks"
+  fi
+}
+
+function gg {
+    ! active && echo 'no active workday.' && return 1
+    wan || return 1
+    fin
+    [[ "$1" ]] && notes="$@, "
+    notes="$notes`tasks`"
+    [[ "$notes" ]] && notes="  + notes: $notes
+"
+    local endtime=`date +%s`
+    local dayhours=`day $endtime`
+    local weekhours=`weekhours $dayhours`
+
+    fileinsert "$LOGFILE" "+ `date -d @$endtime +%R` - $dayhours hours
+$notes
+<!-- $endtime
+week:
+$weekhours / `sub 40 $weekhours`
+afk:
+`afktime`
+today:
+$dayhours -->"
+    up
+    validate "$LOGFILE"
+    read -p ''
+}
+
+function oops { 
+    clear; removed="`tail -n1 "$LOGFILE"`"
+    filewrite "$LOGFILE" "`sed '$d' "$LOGFILE"`" \
+      && color cyan "`cat "$LOGFILE"`" && color mag "$removed" \
+      && read -p ''
+}
+
+function ... {
+  cat "$LOGFILE" | grep -q '_#_' && keep fin ||:
+  local since="`cat "$LOGFILE" | grep "^+ $timegrep - [[:digit:]]" | tail -n1`"
+  if [[ "$since" ]]; then
+    local add="`echo "$since" | gawk '{print $4}'`"
+    add="`round 0 $add x 60 x 60`"
+    since="`echo "$since" | gawk '{print $2}'`"
+    since="`date -d "$since" +%s`"
+    since="`clac $since + $add`"
+    since="`date -d "@$since" +%R`"
+  else
+    since="`cat "$LOGFILE" | grep "^+ $timegrep -" | tail -n1 | gawk '{print $2}'`"
+  fi
+  [[ "$since" ]] && task since $since $@
+}
+
+function afk { task $@ afk; }
+

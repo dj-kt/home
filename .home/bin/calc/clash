@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -ef
+
+function __clash_test {
+  . "$HOMETEST/expect"
+  expect 144 toEqual clash '12^2'
+  expect 12 toEqual clash 'sqrt(144)'
+  expect 'imaginary' toEqual clash 'sqrt(-2)'
+  expect 'infinity' toEqual clash '1/0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001'
+  expect 3.14159 toEqual clash 'atan2(0, -1)'
+}
+
+function __clash_plot {
+  width=${width:-'250'} height=${height:-'40'} left=${left:-'-10'} right=${right:-'10'}
+  term=${term:-"dumb size $width, $height"}
+  [[ "$1" == '=' ]] && shift
+  expr="${@//'x'/'v'}" expr=`__clash_build $expr` expr="${expr//'v'/'x'}"
+  echo -e "\n y = `__clash_print $expr`"
+  plot="set term $term; plot[$left:$right] $expr"
+  gnuplot -persist<<<$plot
+}
+
+function __clash_build {
+  [[ "$1" ]] || return
+  local expr="$@"
+  expr="`to lowercase $expr`"
+  expr="`echo $expr | sed 's/\([0-9]\)e+/\1EPLUS/g'`"
+  expr="`echo $expr | sed 's/\([0-9]\)e-/\1EMINUS/g'`"
+  expr="${expr//'exp'/'EXP'}"
+  expr="${expr//'x'/'*'}" expr="${expr//'e'/$e}"  expr="${expr//'EXP'/'exp'}"
+  expr="${expr//', '/'COMMSPACE'}" expr="${expr//','/''}" expr="${expr//' '/''}" expr="${expr//'COMMSPACE'/', '}"
+  expr="${expr//'×'/'*'}" expr="${expr//'÷'/'/'}"  expr="${expr//'−'/'-'}" 
+  expr="${expr//'--'/'+'}" expr="${expr//'++'/'+'}" expr="${expr//'+-'/'-'}"
+  expr="${expr//'pi'/$pi}" expr="${expr//'π'/$pi}"
+  expr="${expr//'^'/'**'}"
+  expr="${expr//'$'/''}"
+  expr="${expr//'EPLUS'/'e+'}" expr="${expr//'EMINUS'/'e-'}"
+  echo "$expr"
+}
+
+function __clash_print {
+  [[ "$1" ]] || return
+  expr="$@"
+  expr="`echo $expr | sed 's/\([0-9]\)-/\1 − /g'`"
+  expr="`echo $expr | sed 's/\([0-9]\)e+/\1EPLUS/g'`"
+  expr="`echo $expr | sed 's/\([0-9]\)e-/\1EMINUS/g'`"
+  expr="${expr//$e/'e'}"
+  expr="${expr//$pi/'π'}"
+  expr="${expr//'**'/'^'}"
+  expr="${expr//'*'/' × '}"
+  expr="${expr//'/'/' ÷ '}"
+  expr="${expr//'+'/' + '}"
+  expr="${expr//'%'/' % '}"
+  expr="${expr//'EPLUS'/'e+'}"
+  expr="${expr//'EMINUS'/'e-'}"
+  echo "$expr"
+}
+
+function __clash_calculate {
+  expression="`__clash_build $@`"
+  [[ $showExpression ]] && printf "%s" "`__clash_print $expression` = "
+  clac "$expression" 2>&1 | sed 's/.*inf/infinity/g'| sed 's/.*division by zero attempted/infinity/g' | sed 's/.*nan/imaginary/g' | grep -v 'received negative argument'
+}
+
+function __clash_= {
+  showExpression=true
+  __clash_calculate $@
+}
+
+__clash_$@ 2> /dev/null || __clash_calculate $@
+
+
+# function shell {
+#   while true; do
+#     if [[ "$result" ]]; then prom="$result "; else prom=''; result='0'; fi
+#     read -rep "$prom" input
+#     [[ "$input" == 'cl' ]] && echo && result='' && clear && continue
+#     [[ "$input" == 'q' ]] && break
+#     prev_result="$result"
+#     [[ "$input" == "++" ]] && input='+1'
+#     [[ "$input" == "--" ]] && input='-1'
+#     result="`__clash_calculate $result $input`"
+#     [[ "$result" == 'imaginary' || "$result" == 'infinity' ]] && color red "$result" && result='' && continue
+#     [[ "$result" ]] || result="$prev_result"
+#   done
+# }
+
